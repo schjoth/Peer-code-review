@@ -1,6 +1,6 @@
 package example
 
-import example.plugins.*
+import example.routes.configureRouting
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*

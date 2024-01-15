@@ -11,6 +11,7 @@ import kotlinx.coroutines.*
 fun Application.configureDatabases() {
     val dbConnection: Connection = connectToPostgres(embedded = true)
     val cityService = CityService(dbConnection)
+
     routing {
         // Create city
         post("/cities") {
