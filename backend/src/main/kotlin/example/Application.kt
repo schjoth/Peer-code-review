@@ -22,7 +22,6 @@ fun main(args: Array<String>): Unit = EngineMain.main(args)
 fun Application.module() {
     configureSecurity()
     configureSerialization()
-    configureDatabases()
     configureRouting()
     DatabaseSingleton.init(environment.config)
 }
