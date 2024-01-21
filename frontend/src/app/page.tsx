@@ -46,7 +46,7 @@ export default function RootLayout({
 			>
 				<CodeView code={code}></CodeView>
 				<Flex
-					bgColor="grey"
+					bgColor="rgb(243, 164, 74)"
 					justifyContent="center"
 					alignContent="center"
 				>

@@ -20,7 +20,7 @@ const CodeLine: React.FC<CodeLineProps> = ({
 			flexWrap={"wrap"}
 			gap="1rem"
 			w="100%"
-			_hover={{ cursor: "pointer", bgColor: "rgba(170,180,180,0.5)" }}
+			_hover={{ cursor: "pointer", bgColor: "rgb(243, 164, 74)" }}
 			onClick={onClick}
 		>
 			<Box as="span" mr="1rem">
