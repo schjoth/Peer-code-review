@@ -1,71 +1,43 @@
-import React, { useEffect, useRef, useState } from "react";
+import { Box } from "@chakra-ui/react";
+import React from "react";
 
 interface CodeLineProps {
 	onClick: () => void;
 	children: React.ReactNode;
+	lineNumber: number;
 }
 
-const CodeLine: React.FC<CodeLineProps> = ({ onClick, children }) => {
-	const [hover, setHover] = useState<boolean>(false);
-	const ref = useRef<HTMLSpanElement>(null);
-
-	useEffect(() => {
-		const addHover = () => setHover(true);
-		const removeHover = () => setHover(false);
-
-		ref.current?.addEventListener("mouseover", addHover);
-		ref.current?.addEventListener("mouseout", removeHover);
-
-		return () => {
-			ref.current?.removeEventListener("mouseover", addHover);
-			ref.current?.removeEventListener("mouseout", removeHover);
-		};
-	}, []);
-
+const CodeLine: React.FC<CodeLineProps> = ({
+	onClick,
+	children,
+	lineNumber,
+}) => {
 	return (
-		<span style={hover ? styles.hover : styles.normal} ref={ref}>
-			<span
-				onClick={onClick}
-				style={{
-					whiteSpace: "preserve",
-					width: "100%",
-					paddingRight: 10,
-				}}
+		<Box
+			display="flex"
+			flexDirection="row"
+			alignContent="center"
+			flexWrap={"wrap"}
+			gap="1rem"
+			w="100%"
+			_hover={{ cursor: "pointer", bgColor: "rgba(170,180,180,0.5)" }}
+			onClick={onClick}
+		>
+			<Box as="span" mr="1rem">
+				{lineNumber}
+			</Box>
+			<Box
+				as="span"
+				w="100%"
+				margin={0}
+				flex="1"
+				textAlign="left"
+				whiteSpace="preserve"
 			>
 				{children}
-			</span>
-			{hover && (
-				<span
-					style={{
-						alignSelf: "flex-end",
-						justifySelf: "flex-end",
-						marginLeft: "-10px",
-					}}
-				>
-					+
-				</span>
-			)}
-		</span>
+			</Box>
+		</Box>
 	);
-};
-
-const styles = {
-	normal: {
-		display: "flex",
-		width: "100%",
-		justifyContent: "space-between",
-		padding: "0 10px",
-	},
-
-	hover: {
-		display: "flex",
-		width: "100%",
-		justifyContent: "space-between",
-		whiteSpace: "preserve",
-		cursor: "pointer",
-		background: "rgba(120,120,120, 0.6)",
-		padding: "0 10px",
-	},
 };
 
 export default CodeLine;

@@ -1,3 +1,12 @@
+import {
+	Box,
+	Button,
+	Flex,
+	FormLabel,
+	Input,
+	Textarea,
+	VStack,
+} from "@chakra-ui/react";
 import styles from "./page.module.css";
 import CodeView from "@/components/CodeView";
 
@@ -29,9 +38,28 @@ export default function RootLayout({
 
 	return (
 		<main className={styles.main}>
-			<div style={{ display: "flex", flexDirection: "column" }}>
+			<Box
+				display="grid"
+				gridTemplateColumns="50% 50%"
+				w="100%"
+				minH="100vh"
+			>
 				<CodeView code={code}></CodeView>
-			</div>
+				<Flex
+					bgColor="grey"
+					justifyContent="center"
+					alignContent="center"
+				>
+					<VStack justifyContent={"center"} w="100%" px="4rem">
+						<FormLabel alignSelf={"flex-start"}>
+							General feedback
+						</FormLabel>
+						<Textarea bgColor="white" h={300}></Textarea>
+						<Button>Submit Review</Button>
+					</VStack>
+				</Flex>
+			</Box>
+			<div style={{ display: "flex", flexDirection: "column" }}></div>
 		</main>
 	);
 }
