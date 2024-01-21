@@ -1,11 +1,10 @@
 package example.models
 
-import org.jetbrains.exposed.sql.*
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.Table
 
 @Serializable
-data class Course (
-    @Serializable
+data class Course(
     val id: Int,
     val name: String,
     val students: List<User> = listOf(),
@@ -20,11 +19,9 @@ object Courses : Table() {
 }
 
 object UsersInCourse : Table() {
-    val user = integer("userId")
-    val course = integer("courseId")
+    val user = reference("user_id", Users.id)
+    val course = reference("course_id", Courses.id)
     val role = varchar("role", 64)
-
-    //TODO figure out the foreign key stuff
 
     override val primaryKey = PrimaryKey(user, course, role)
 }

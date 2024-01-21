@@ -1,17 +1,24 @@
 package example.models
 
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.IntIdTable
 
 @Serializable
 data class User(
-    val userId: Int,
+    val id: Int,
     val name: String
 )
 
-object Users : Table() {
-    val userId = integer("id")
+object Users : IntIdTable() {
     val name = varchar("name", 128)
+}
 
-    override val primaryKey = PrimaryKey(Courses.id)
+
+class UserEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<UserEntity>(Users)
+
+    var name by Users.name
 }

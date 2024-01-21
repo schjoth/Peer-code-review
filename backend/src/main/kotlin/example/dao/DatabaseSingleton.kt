@@ -3,13 +3,13 @@ package example.dao
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import example.models.*
-import kotlinx.coroutines.*
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.transactions.*
-import org.jetbrains.exposed.sql.transactions.experimental.*
-
 import io.ktor.server.config.*
-import java.io.*
+import kotlinx.coroutines.Dispatchers
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.io.File
 
 object DatabaseSingleton {
     private fun createHikariDataSource(
@@ -30,9 +30,9 @@ object DatabaseSingleton {
                 (config.propertyOrNull("storage.dbFilePath")?.getString()?.let {
                     File(it).canonicalFile.absolutePath
                 } ?: "")
-        val database = Database.connect(createHikariDataSource( jdbcURL, driverClassName))
+        val database = Database.connect(createHikariDataSource(jdbcURL, driverClassName))
         transaction(database) {
-            SchemaUtils.create(Courses)
+            SchemaUtils.create(Courses, Assignments, Users, Submissions, Reviews)
         }
     }
 

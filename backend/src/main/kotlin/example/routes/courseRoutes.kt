@@ -1,4 +1,5 @@
 package example.routes
+
 import example.dao.CourseFacadeImpl
 import example.dao.DatabaseSingleton.dbQuery
 import example.models.Course
@@ -17,11 +18,9 @@ fun Route.courseRoutes() {
             }
         }
     }
-    post{
+    post {
         dbQuery {
             val course = call.receive<Course>()
-            println("recieved:")
-            println(course)
             course.let { it2 ->
                 call.respond(CourseFacadeImpl().addNewCourse(it2.name) ?: HttpStatusCode.InternalServerError)
             }
