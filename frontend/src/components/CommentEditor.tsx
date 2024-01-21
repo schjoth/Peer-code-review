@@ -1,6 +1,6 @@
 import { Comment, useCommentStore } from "@/store/CommentStore";
 import { Box, Button, ButtonGroup, Textarea } from "@chakra-ui/react";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 
 interface CommentEditorProps {
 	comment: Comment | undefined;
@@ -25,9 +25,14 @@ const CommentEditor: React.FC<CommentEditorProps> = ({
 		setLastStoredValue(value);
 	};
 
+	useEffect(() => {
+		let newValue = comment?.comment || "";
+		setValue(newValue);
+		setLastStoredValue(newValue);
+	}, [comment]);
+
 	if (!comment) return <></>;
 	const isDisabled = value === lastStoredValue;
-	console.log("should be disabled: ", isDisabled);
 
 	return (
 		<Box w="100%">
