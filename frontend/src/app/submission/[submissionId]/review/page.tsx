@@ -1,3 +1,4 @@
+"use client";
 import {
 	Box,
 	Button,
@@ -7,8 +8,11 @@ import {
 	VStack,
 } from "@chakra-ui/react";
 import CodeView from "@/components/CodeView";
+import { useCommentStore } from "@/store/CommentStore";
+import { useState } from "react";
 
-export default async function Home() {
+export default function Home() {
+	const { comments } = useCommentStore();
 	const code = `import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
@@ -32,6 +36,30 @@ export default function RootLayout({
   )
 }`;
 
+	const [feedback, setFeedback] = useState("");
+
+	const onSubmit = async () => {
+		console.log("skal prøve å persistere data");
+		await fetch("/api/review/post", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				feedback: feedback,
+				comments: comments.map((c) => ({
+					lineNumber: c.line,
+					text: c.comment,
+				})),
+			}),
+			cache: "no-store",
+		}).then((res) => {
+			if (res.ok) {
+				//TODO: redurect til ny side
+			}
+		});
+	};
+
 	return (
 		<Box display="grid" gridTemplateColumns="50% 50%" w="100%" minH="100vh">
 			<CodeView code={code} />
@@ -44,8 +72,12 @@ export default function RootLayout({
 					<FormLabel alignSelf={"flex-start"}>
 						General feedback
 					</FormLabel>
-					<Textarea bgColor="white" h={300}></Textarea>
-					<Button>Submit Review</Button>
+					<Textarea
+						bgColor="white"
+						h={300}
+						onChange={(e) => setFeedback(e.target.value)}
+					></Textarea>
+					<Button onClick={onSubmit}>Submit Review</Button>
 				</VStack>
 			</Flex>
 		</Box>
