@@ -1,6 +1,7 @@
-"use client";
 import { Inter } from "next/font/google";
 import "./globals.css";
+
+import { UserProvider } from "@auth0/nextjs-auth0/client";
 
 import { ChakraProvider } from "@chakra-ui/react";
 
@@ -14,7 +15,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<ChakraProvider>{children}</ChakraProvider>
+				<UserProvider>
+					<ChakraProvider>{children}</ChakraProvider>
+				</UserProvider>
 			</body>
 		</html>
 	);

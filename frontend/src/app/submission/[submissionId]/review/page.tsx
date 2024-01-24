@@ -32,12 +32,6 @@ export default function RootLayout({
   )
 }`;
 
-	var test = await fetch("http://0.0.0.0:8090/review/1").then((res) =>
-		res.json()
-	);
-
-	code.split("\n").forEach((a) => console.log(a));
-
 	return (
 		<Box display="grid" gridTemplateColumns="50% 50%" w="100%" minH="100vh">
 			<CodeView code={code} />

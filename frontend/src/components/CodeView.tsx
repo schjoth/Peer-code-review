@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import CodeLine from "./CodeLine";
-import { Accordion, VStack } from "@chakra-ui/react";
+import { VStack } from "@chakra-ui/react";
 import { useCommentStore } from "@/store/CommentStore";
 import CommentEditor from "./CommentEditor";
 
@@ -12,16 +12,13 @@ interface CodeViewProps {
 const CodeView: React.FC<CodeViewProps> = ({ code }) => {
 	const { comments, addEmptyComment } = useCommentStore();
 
-	const getComment = (idx: number) => (
-		<CommentEditor
-			comment={comments.find((c) => c.line == idx)}
-			lineNumber={idx}
-		/>
-	);
-	console.log(comments);
+	const getComments = (idx: number) => {
+		let comment = comments.find((c) => c.line == idx);
+
+		return <CommentEditor comment={comment} lineNumber={idx} />;
+	};
 
 	const handleOnClick = (idx: number) => {
-		console.log("hei");
 		addEmptyComment(idx);
 	};
 
@@ -32,14 +29,20 @@ const CodeView: React.FC<CodeViewProps> = ({ code }) => {
 			spacing={0}
 			overflowX={"scroll"}
 		>
-			{code.split("\n").map((it, i) => (
-				<React.Fragment key={i}>
-					<CodeLine onClick={() => handleOnClick(i)} lineNumber={i}>
-						{it}
-					</CodeLine>
-					{getComment(i)}
-				</React.Fragment>
-			))}
+			{code.split("\n").map((it, i) => {
+				let lineNumber = i + 1;
+				return (
+					<React.Fragment key={lineNumber}>
+						<CodeLine
+							onClick={() => handleOnClick(lineNumber)}
+							lineNumber={lineNumber}
+						>
+							{it}
+						</CodeLine>
+						{getComments(lineNumber)}
+					</React.Fragment>
+				);
+			})}
 		</VStack>
 	);
 };
