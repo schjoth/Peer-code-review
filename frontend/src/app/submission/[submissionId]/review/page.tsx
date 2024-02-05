@@ -10,9 +10,10 @@ import {
 import CodeView from "@/components/CodeView";
 import { useCommentStore } from "@/store/CommentStore";
 import { useState } from "react";
+import { CreateCommentBody } from "@/app/api/github/[installationId]/repos/[owner]/[repo]/pulls/[pull_number]/comments/route";
 
 export default function Home() {
-	const { comments } = useCommentStore();
+	const { comments, clear: clearStore } = useCommentStore();
 	const code = `import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
@@ -40,22 +41,28 @@ export default function RootLayout({
 
 	const onSubmit = async () => {
 		console.log("skal prøve å persistere data");
-		await fetch("/api/review/post", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				feedback: feedback,
-				comments: comments.map((c) => ({
-					lineNumber: c.line,
-					text: c.comment,
-				})),
-			}),
-			cache: "no-store",
-		}).then((res) => {
+
+		const body: CreateCommentBody = {
+			comments: comments,
+			commit_id: "cb50c0436d55aec507b7db213af64fd66cf3b27f",
+			feedback: feedback,
+		};
+
+		await fetch(
+			"/api/github/repos/Testing-PCR/demo-repository/pulls/1/comments",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(body),
+				cache: "no-store",
+			}
+		).then((res) => {
 			if (res.ok) {
-				//TODO: redurect til ny side
+				clearStore();
+				setFeedback("");
+				//TODO: redirect til ny side
 			}
 		});
 	};

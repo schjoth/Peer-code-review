@@ -4,55 +4,39 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 
 interface CommentEditorProps {
 	comment: Comment | undefined;
-	lineNumber: number;
 }
 
-const CommentEditor: React.FC<CommentEditorProps> = ({
-	comment,
-	lineNumber,
-}) => {
-	const [value, setValue] = useState(comment?.comment || "");
-	const [lastStoredValue, setLastStoredValue] = useState<string>(value);
+const CommentEditor: React.FC<CommentEditorProps> = ({ comment }) => {
+	// const [value, setValue] = useState(comment?.comment || "");
 
-	let handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-		let inputValue = e.target.value;
-		setValue(inputValue);
-	};
+	// let handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+	// 	let inputValue = e.target.value;
+	// 	setValue(inputValue);
+	// };
 
 	const { saveComment, removeComment } = useCommentStore();
-	const handleOnClick = () => {
-		saveComment({ line: lineNumber, comment: value });
-		setLastStoredValue(value);
-	};
-
-	useEffect(() => {
-		let newValue = comment?.comment || "";
-		setValue(newValue);
-		setLastStoredValue(newValue);
-	}, [comment]);
 
 	if (!comment) return <></>;
-	const isDisabled = value === lastStoredValue;
+
+	const handleOnClick = (value: string) => {
+		saveComment({ line: comment?.line, comment: value });
+	};
+
+	// useEffect(() => {
+	// 	let newValue = comment?.comment || "";
+	// 	// setValue(newValue);
+	// }, [comment]);
 
 	return (
 		<Box w="100%">
-			<Textarea value={value} onChange={handleInputChange}></Textarea>
+			<Textarea
+				value={comment.comment}
+				onChange={(e) => handleOnClick(e.target.value)}
+			></Textarea>
 			<ButtonGroup>
-				<Box
-					as="button"
-					bgColor="green"
-					color="white"
-					p="0.5rem 1rem"
-					borderRadius={5}
-					onClick={handleOnClick}
-					disabled={isDisabled}
-					_disabled={{ bgColor: "rgba(0,100,0,0.5)" }}
-				>
-					Save
-				</Box>
 				<Button
 					colorScheme="red"
-					onClick={() => removeComment(lineNumber)}
+					onClick={() => removeComment(comment.line)}
 				>
 					Discard
 				</Button>

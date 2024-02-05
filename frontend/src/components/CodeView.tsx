@@ -12,10 +12,10 @@ interface CodeViewProps {
 const CodeView: React.FC<CodeViewProps> = ({ code }) => {
 	const { comments, addEmptyComment } = useCommentStore();
 
-	const getComments = (idx: number) => {
+	const getComment = (idx: number) => {
 		let comment = comments.find((c) => c.line == idx);
 
-		return <CommentEditor comment={comment} lineNumber={idx} />;
+		return <CommentEditor comment={comment} />;
 	};
 
 	const handleOnClick = (idx: number) => {
@@ -39,7 +39,7 @@ const CodeView: React.FC<CodeViewProps> = ({ code }) => {
 						>
 							{it}
 						</CodeLine>
-						{getComments(lineNumber)}
+						{getComment(lineNumber)}
 					</React.Fragment>
 				);
 			})}

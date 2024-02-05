@@ -4,6 +4,7 @@ export type Comment = {
 	//line is used as id, so can only have one comment per line, however if support for multiple files are added, thie logic needs update
 	line: number;
 	comment: string;
+	path: string;
 };
 
 interface CommentStoreState {
@@ -11,6 +12,7 @@ interface CommentStoreState {
 	saveComment: (comment: Comment) => void;
 	addEmptyComment: (lineNumber: number) => void;
 	removeComment: (lineNumber: number) => void;
+	clear: () => void;
 }
 
 export const useCommentStore = create<CommentStoreState>()((set, get) => ({
@@ -31,8 +33,12 @@ export const useCommentStore = create<CommentStoreState>()((set, get) => ({
 		var curr = get().comments;
 		if (!curr.find((c) => c.line == lineNumber)) {
 			set(() => ({
-				comments: [...curr, { comment: "", line: lineNumber }],
+				comments: [
+					...curr,
+					{ comment: "", line: lineNumber, path: "" },
+				],
 			}));
 		}
 	},
+	clear: () => set(() => ({ comments: [] })),
 }));
