@@ -1,20 +1,82 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRepoDetails } from "../../db-requests";
 import { getOctokit } from "../../github/Github";
+import { Comment } from "@/store/CommentStore";
 
-export async function POST(req: Request) {
-	const bodyContent = await req.json();
-	const jsonBody = JSON.stringify(bodyContent);
+export interface CreateCommentBody {
+	comments: Comment[];
+	commit_id: string;
+	feedback: string;
+}
 
-	const result = await fetch("http://0.0.0.0:8090/review", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: jsonBody,
-		cache: "no-store",
+export async function POST(req: NextRequest, context: any) {
+	const { repoId } = context.params;
+
+	const repoDetails = await getRepoDetails(repoId);
+
+	const githubApi = await getOctokit(repoDetails.course.installationId);
+
+	const owner = repoDetails.repoUrl.split("/")[3];
+	const repo = repoDetails.repoUrl.split("/")[4];
+	const pull_number = parseInt(repoDetails.repoUrl.split("/")[6]);
+
+	const { comments, commit_id, feedback }: CreateCommentBody =
+		await req.json();
+
+	let resultStatuses = [];
+
+	//post in-line comments
+	comments.forEach(async ({ file, comment, changeKey }) => {
+		let inlineComment = await githubApi.request(
+			"POST /repos/{owner}/{repo}/pulls/{pull_number}/comments",
+			{
+				repo,
+				owner,
+				pull_number: Number(pull_number),
+				body: comment,
+				commit_id,
+				path: file,
+				// start_line: line,
+				// start_side: "RIGHT",
+				line: parseInt(changeKey.slice(1)),
+				side: ["N", "D"].includes(changeKey[0]) ? "LEFT" : "RIGHT",
+			}
+		);
+
+		resultStatuses.push(inlineComment.status || 500);
 	});
-	return result;
+
+	//create normal comment in "issue"(pr) thread
+	const normalComment = await githubApi.request(
+		"POST /repos/{owner}/{repo}/issues/{issue_number}/comments",
+		{
+			owner,
+			repo,
+			issue_number: 1,
+			body: feedback,
+			headers: {
+				"X-GitHub-Api-Version": "2022-11-28",
+			},
+		}
+	);
+	resultStatuses.push(normalComment.status || 500);
+
+	if (resultStatuses.findIndex((el) => el === 201) !== -1) {
+		return NextResponse.json(
+			{
+				message: "An error occurred",
+			},
+			{
+				status: 500,
+			}
+		);
+	}
+
+	console.log({ resultStatuses });
+
+	//TODO persist reviewer in database
+
+	return NextResponse.json({}, { status: 200 });
 }
 
 //Gets the diff of a pull request
@@ -50,5 +112,6 @@ export async function GET(req: NextRequest, context: any) {
 
 	return NextResponse.json({
 		diff: await diffRes.text(),
+		commit: prRes.data.head.sha,
 	});
 }

@@ -4,13 +4,14 @@ import {
 	Button,
 	Flex,
 	FormLabel,
+	Spinner,
 	Textarea,
 	VStack,
 } from "@chakra-ui/react";
 import { useCommentStore } from "@/store/CommentStore";
 import { useEffect, useState } from "react";
-import { CreateCommentBody } from "@/app/api/github/[installationId]/repos/[owner]/[repo]/pulls/[pull_number]/comments/route";
 import DiffView from "@/components/DiffView";
+import { CreateCommentBody } from "@/app/api/review/[repoId]/route";
 
 export default function Home({
 	params: { sourceId },
@@ -18,13 +19,16 @@ export default function Home({
 	params: { sourceId: string };
 }) {
 	const { comments, clear: clearStore } = useCommentStore();
-	const [diffText, setDiffText] = useState<string>("");
+	const [data, setData] = useState<{
+		diff: string;
+		commit: string;
+	}>();
 
 	useEffect(() => {
 		const fetchData = async () => {
 			await fetch("/api/review/" + sourceId)
 				.then((res) => res.json())
-				.then((data) => setDiffText(data.diff));
+				.then((data) => setData(data));
 		};
 
 		fetchData();
@@ -33,25 +37,22 @@ export default function Home({
 	const [feedback, setFeedback] = useState("");
 
 	const onSubmit = async () => {
-		console.log("skal prøve å persistere data");
+		if (!data || !feedback) return;
 
 		const body: CreateCommentBody = {
 			comments: comments,
-			commit_id: "cb50c0436d55aec507b7db213af64fd66cf3b27f",
+			commit_id: data?.commit,
 			feedback: feedback,
 		};
 
-		await fetch(
-			"/api/github/46797246/repos/Testing-PCR/demo-repository/pulls/1/comments",
-			{
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(body),
-				cache: "no-store",
-			}
-		).then((res) => {
+		await fetch("/api/review/" + sourceId, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(body),
+			cache: "no-store",
+		}).then((res) => {
 			if (res.ok) {
 				clearStore();
 				setFeedback("");
@@ -60,9 +61,24 @@ export default function Home({
 		});
 	};
 
+	if (!data) {
+		return (
+			<Flex
+				h="100vh"
+				w="100vw"
+				justifyContent="center"
+				alignItems={"center"}
+				flexDirection={"column"}
+			>
+				<Spinner></Spinner>
+				<div>Loading...</div>
+			</Flex>
+		);
+	}
+
 	return (
 		<Box display="grid" gridTemplateColumns="65% 35%" w="100%" minH="100vh">
-			<DiffView diffPlainText={diffText} />
+			<DiffView diffPlainText={data.diff} />
 			<Flex
 				bgColor="rgb(243, 164, 74)"
 				justifyContent="center"
