@@ -27,12 +27,12 @@ export async function POST(req: NextRequest, context: any) {
 
 	//post in-line comments
 	comments.forEach(async ({ file, comment, changeKey }) => {
-		let inlineComment = await githubApi.request(
+		let inlineCommentRes = await githubApi.request(
 			"POST /repos/{owner}/{repo}/pulls/{pull_number}/comments",
 			{
 				repo,
 				owner,
-				pull_number: Number(pull_number),
+				pull_number: pull_number,
 				body: comment,
 				commit_id,
 				path: file,
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest, context: any) {
 			}
 		);
 
-		resultStatuses.push(inlineComment.status || 500);
+		resultStatuses.push(inlineCommentRes.status || 500);
 	});
 
 	//create normal comment in "issue"(pr) thread
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest, context: any) {
 		{
 			owner,
 			repo,
-			issue_number: 1,
+			issue_number: pull_number,
 			body: feedback,
 			headers: {
 				"X-GitHub-Api-Version": "2022-11-28",
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest, context: any) {
 	);
 	resultStatuses.push(normalComment.status || 500);
 
-	if (resultStatuses.findIndex((el) => el === 201) !== -1) {
+	if (resultStatuses.findIndex((el) => el < 200 || el >= 400) !== -1) {
 		return NextResponse.json(
 			{
 				message: "An error occurred",
@@ -71,8 +71,6 @@ export async function POST(req: NextRequest, context: any) {
 			}
 		);
 	}
-
-	console.log({ resultStatuses });
 
 	//TODO persist reviewer in database
 
