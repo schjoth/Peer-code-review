@@ -16,7 +16,6 @@ const DiffView: FC<DiffViewProps> = ({ diffPlainText }) => {
 
 	const codeEvents = (filepath: string) => ({
 		onClick(data: any, e: any) {
-			console.log("onClick");
 			const changeKey = getChangeKey(data.change);
 			addEmptyComment(filepath, changeKey);
 		},
@@ -33,7 +32,6 @@ const DiffView: FC<DiffViewProps> = ({ diffPlainText }) => {
 					<CommentEditor comment={comment}></CommentEditor>
 				);
 			});
-		console.log(result);
 		return result;
 	};
 
