@@ -22,9 +22,7 @@ export default function Home({
 
 	useEffect(() => {
 		const fetchData = async () => {
-			await fetch(
-				"/api/github/46797246/repos/Testing-PCR/demo-repository/pulls/1"
-			)
+			await fetch("/api/review/" + sourceId)
 				.then((res) => res.json())
 				.then((data) => setDiffText(data.diff));
 		};
