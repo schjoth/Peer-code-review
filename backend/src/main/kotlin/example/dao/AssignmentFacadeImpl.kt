@@ -11,9 +11,10 @@ import org.jetbrains.exposed.sql.select
 
 class AssignmentFacadeImpl : AssignmentFacade {
 
+    //TODO remove entire file
     private fun resultRowToAssignment(row: ResultRow) = Assignment(
         id = row[Assignments.id],
-        courseId = row[Assignments.courseId],
+        courseId = 0,
         description = row[Assignments.description],
         startTime = row[Assignments.startTime].toKotlinLocalDateTime(),
         deadline = row[Assignments.deadline].toKotlinLocalDateTime(),

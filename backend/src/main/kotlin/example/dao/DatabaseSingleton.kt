@@ -32,7 +32,7 @@ object DatabaseSingleton {
                 } ?: "")
         val database = Database.connect(createHikariDataSource(jdbcURL, driverClassName))
         transaction(database) {
-            SchemaUtils.create(Courses, Assignments, Users, Submissions, Reviews)
+            SchemaUtils.create(Courses, Assignments, Users, Submissions, Reviews, Repos)
         }
     }
 

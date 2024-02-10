@@ -1,10 +1,11 @@
 package example
 
 import example.dao.DatabaseSingleton
-import example.plugins.*
+import example.plugins.configureAuthentication
+import example.plugins.configureSecurity
+import example.plugins.configureSerialization
 import example.routes.configureRouting
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 
 /*
@@ -16,10 +17,11 @@ fun main() {
 
  */
 
+
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 
-
 fun Application.module() {
+    configureAuthentication()
     configureSecurity()
     configureSerialization()
     configureRouting()
