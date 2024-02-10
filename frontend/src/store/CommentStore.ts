@@ -2,41 +2,48 @@ import { create } from "zustand";
 
 export type Comment = {
 	//line is used as id, so can only have one comment per line, however if support for multiple files are added, thie logic needs update
-	line: number;
+	changeKey: string;
 	comment: string;
-	path: string;
+	file: string;
 };
 
 interface CommentStoreState {
 	comments: Array<Comment>;
 	saveComment: (comment: Comment) => void;
-	addEmptyComment: (lineNumber: number) => void;
-	removeComment: (lineNumber: number) => void;
+	addEmptyComment: (file: string, changeKey: string) => void;
+	removeComment: (file: string, changeKey: string) => void;
 	clear: () => void;
 }
+
+const filterAwayComment = (
+	comments: Array<Comment>,
+	file: string,
+	changeKey: string
+) => comments.filter((c) => c.file !== file || c.changeKey !== changeKey);
 
 export const useCommentStore = create<CommentStoreState>()((set, get) => ({
 	comments: [],
 	saveComment: (comment: Comment) => {
 		set((state) => ({
 			comments: [
-				...state.comments.filter((c) => c.line !== comment.line),
+				...filterAwayComment(
+					state.comments,
+					comment.file,
+					comment.changeKey
+				),
 				comment,
 			],
 		}));
 	},
-	removeComment: (lineNumber) =>
+	removeComment: (file, changeKey) =>
 		set((state) => ({
-			comments: state.comments.filter((c) => c.line !== lineNumber),
+			comments: filterAwayComment(state.comments, file, changeKey),
 		})),
-	addEmptyComment: (lineNumber) => {
+	addEmptyComment: (file, changeKey) => {
 		var curr = get().comments;
-		if (!curr.find((c) => c.line == lineNumber)) {
+		if (!curr.find((c) => c.file == file && c.changeKey == changeKey)) {
 			set(() => ({
-				comments: [
-					...curr,
-					{ comment: "", line: lineNumber, path: "" },
-				],
+				comments: [...curr, { comment: "", changeKey, file }],
 			}));
 		}
 	},

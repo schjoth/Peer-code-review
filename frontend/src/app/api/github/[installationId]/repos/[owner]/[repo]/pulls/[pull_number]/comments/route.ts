@@ -34,7 +34,7 @@ export async function POST(req: NextRequest, context: any) {
 	let resultStatuses = [];
 
 	//post in-line comments
-	comments.forEach(async ({ line, comment, path }) => {
+	comments.forEach(async ({ file, comment, changeKey }) => {
 		let inlineComment = await githubApi.request(
 			"POST /repos/{owner}/{repo}/pulls/{pull_number}/comments",
 			{
@@ -43,11 +43,11 @@ export async function POST(req: NextRequest, context: any) {
 				pull_number: Number(pull_number),
 				body: comment,
 				commit_id,
-				path,
+				path: file,
 				// start_line: line,
 				// start_side: "RIGHT",
-				line: line,
-				side: "RIGHT",
+				line: parseInt(changeKey.slice(1)),
+				side: changeKey[0] == "N" ? "LEFT" : "RIGHT",
 			}
 		);
 

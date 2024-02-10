@@ -3,10 +3,12 @@ import { Box, Button, ButtonGroup, Textarea } from "@chakra-ui/react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 
 interface CommentEditorProps {
-	comment: Comment | undefined;
+	comment: Comment;
 }
 
-const CommentEditor: React.FC<CommentEditorProps> = ({ comment }) => {
+const CommentEditor: React.FC<CommentEditorProps> = ({
+	comment: { changeKey, file, comment },
+}) => {
 	// const [value, setValue] = useState(comment?.comment || "");
 
 	// let handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -16,10 +18,8 @@ const CommentEditor: React.FC<CommentEditorProps> = ({ comment }) => {
 
 	const { saveComment, removeComment } = useCommentStore();
 
-	if (!comment) return <></>;
-
 	const handleOnClick = (value: string) => {
-		saveComment({ line: comment?.line, comment: value });
+		saveComment({ file, changeKey, comment: value });
 	};
 
 	// useEffect(() => {
@@ -30,13 +30,13 @@ const CommentEditor: React.FC<CommentEditorProps> = ({ comment }) => {
 	return (
 		<Box w="100%">
 			<Textarea
-				value={comment.comment}
+				value={comment}
 				onChange={(e) => handleOnClick(e.target.value)}
 			></Textarea>
 			<ButtonGroup>
 				<Button
 					colorScheme="red"
-					onClick={() => removeComment(comment.line)}
+					onClick={() => removeComment(file, changeKey)}
 				>
 					Discard
 				</Button>
