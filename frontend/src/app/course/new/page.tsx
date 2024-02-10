@@ -41,7 +41,9 @@ const CreateNewCourse = () => {
 				borderRadius="20px"
 			>
 				<Box>
-					<FormLabel htmlFor="cn">Enter course name</FormLabel>
+					<FormLabel htmlFor="cn">
+						Enter Github Organization name
+					</FormLabel>
 					<Input
 						id="cn"
 						type="text"
