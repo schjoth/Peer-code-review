@@ -35,6 +35,7 @@ export default function Home({
 	}, []);
 
 	const [feedback, setFeedback] = useState("");
+	const [isComplete, setIsComplete] = useState<boolean>(false);
 
 	const onSubmit = async () => {
 		if (!data || !feedback) return;
@@ -56,10 +57,24 @@ export default function Home({
 			if (res.ok) {
 				clearStore();
 				setFeedback("");
-				//TODO: redirect til ny side
+				setIsComplete(true);
 			}
 		});
 	};
+
+	if (isComplete) {
+		return (
+			<Flex
+				h="100vh"
+				w="100vw"
+				justifyContent="center"
+				alignItems={"center"}
+				flexDirection={"column"}
+			>
+				<div>Review submitted!</div>
+			</Flex>
+		);
+	}
 
 	if (!data) {
 		return (
@@ -92,6 +107,7 @@ export default function Home({
 						bgColor="white"
 						h={300}
 						onChange={(e) => setFeedback(e.target.value)}
+						value={feedback}
 					></Textarea>
 					<Button onClick={onSubmit}>Submit Review</Button>
 				</VStack>
