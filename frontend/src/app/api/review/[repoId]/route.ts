@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getRepoDetails } from "../../db-requests";
+import { getRepoDetails, persistUserIdentity } from "../../db-requests";
 import { getOctokit } from "../../github/Github";
 import { Comment } from "@/store/CommentStore";
+import { Session, getSession } from "@auth0/nextjs-auth0";
 
 export interface CreateCommentBody {
 	comments: Comment[];
@@ -12,7 +13,22 @@ export interface CreateCommentBody {
 export async function POST(req: NextRequest, context: any) {
 	const { repoId } = context.params;
 
+	const session = await getSession();
+	if (!session?.user) {
+		return NextResponse.json(
+			{
+				message: "Unauthorized",
+			},
+			{
+				status: 401,
+			}
+		);
+	}
+	const userIdentity =
+		session.user?.name && session.user.name + ", " + session.user?.email;
 	const repoDetails = await getRepoDetails(repoId);
+	const { id: userId } = await persistUserIdentity(userIdentity, repoId);
+	const signature = "\n\n" + "_Reviewed by: #" + userId + "_";
 
 	const githubApi = await getOctokit(repoDetails.course.installationId);
 
@@ -33,7 +49,7 @@ export async function POST(req: NextRequest, context: any) {
 				repo,
 				owner,
 				pull_number: pull_number,
-				body: comment,
+				body: comment + signature,
 				commit_id,
 				path: file,
 				// start_line: line,
@@ -53,7 +69,7 @@ export async function POST(req: NextRequest, context: any) {
 			owner,
 			repo,
 			issue_number: pull_number,
-			body: feedback,
+			body: feedback + signature,
 			headers: {
 				"X-GitHub-Api-Version": "2022-11-28",
 			},
@@ -71,8 +87,6 @@ export async function POST(req: NextRequest, context: any) {
 			}
 		);
 	}
-
-	//TODO persist reviewer in database
 
 	return NextResponse.json({}, { status: 200 });
 }
