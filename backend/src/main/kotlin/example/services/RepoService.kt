@@ -4,13 +4,14 @@ import example.dao.CourseFacadeImpl
 import example.dao.DatabaseSingleton.dbQuery
 import example.dao.RepoFacadeImpl
 import example.models.Repo
+import example.models.repoFromEntity
 
 class RepoService {
     private val repository = RepoFacadeImpl()
     private val courseRepo = CourseFacadeImpl()
     suspend fun repo(id: Int): Repo? {
         return dbQuery {
-            repository.repo(id)
+            repository.repo(id)?.let(::repoFromEntity)
         }
     }
 
@@ -21,7 +22,7 @@ class RepoService {
         }
         return course?.let {
             dbQuery {
-                repository.createRepo(repoUrl, course)
+                repository.createRepo(repoUrl, course).let(::repoFromEntity)
             }
         }
     }

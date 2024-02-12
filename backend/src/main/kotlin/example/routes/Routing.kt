@@ -18,8 +18,11 @@ fun Application.configureRouting() {
         route("/review") {
             reviewRoutes()
         }
-        route("repo") {
+        route("/repo") {
             repoRoutes()
+        }
+        route("/reviewer") {
+            reviewerRoutes()
         }
     }
 }

@@ -1,5 +1,6 @@
 package example.models
 
+import example.dao.CourseFacadeImpl
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -11,6 +12,12 @@ data class Repo(
     val repoUrl: String,
     val id: Int,
     val course: Course
+)
+
+fun repoFromEntity(row: RepoEntity) = Repo(
+    id = row.id.value,
+    repoUrl = row.repoUrl,
+    course = CourseFacadeImpl.courseFromEntity(row.course)
 )
 
 object Repos : IntIdTable() {

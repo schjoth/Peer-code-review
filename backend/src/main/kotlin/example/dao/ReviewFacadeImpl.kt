@@ -11,13 +11,15 @@ class ReviewFacadeImpl : ReviewFacade {
 //        id = row[Reviews.id],
 //    )
 
-    private fun entityToReview(entity: ReviewEntity) = Review(
-        id = entity.id.value,
-//        author = User(1, "test"),
-        author = entityToUser(entity.author),
-        comments = entity.comments.comments,
-        feedback = entity.feedback
-    )
+    companion object Utils {
+        fun entityToReview(entity: ReviewEntity) = Review(
+            id = entity.id.value,
+            //        author = User(1, "test"),
+            author = entityToUser(entity.author),
+            comments = entity.comments.comments,
+            feedback = entity.feedback
+        )
+    }
 
     override suspend fun createNewReview(review: Review): Review? {
 
