@@ -1,7 +1,8 @@
 "use client";
 import CommentEditor from "@/components/CommentEditor";
 import { useCommentStore } from "@/store/CommentStore";
-import { FC, ReactNode, useEffect, useState } from "react";
+import { Box, Flex, Text } from "@chakra-ui/react";
+import { FC, ReactNode } from "react";
 import { parseDiff, Diff, Hunk, FileData, getChangeKey } from "react-diff-view";
 import "react-diff-view/style/index.css"; //Gives the appropiate styling to the diff view
 
@@ -43,26 +44,43 @@ const DiffView: FC<DiffViewProps> = ({ diffPlainText }) => {
 		newPath,
 		oldPath,
 	}: FileData) => (
-		<Diff
-			key={oldRevision + "-" + newRevision}
-			viewType="split"
-			diffType={type}
-			hunks={hunks}
-			codeEvents={codeEvents(newPath || oldPath)}
-			widgets={getWidgets(newPath || oldPath)}
-		>
-			{(hunks) =>
-				hunks.map((hunk) => (
-					<Hunk
-						key={hunk.content + hunk.newStart + hunk.newLines}
-						hunk={hunk}
-					/>
-				))
-			}
-		</Diff>
+		<Box>
+			<Text
+				as="h2"
+				py="0.5rem"
+				px="1rem"
+				bgColor={"#CCC"}
+				fontWeight="500"
+			>
+				{newPath !== oldPath
+					? oldPath + " -> " + newPath
+					: newPath || oldPath}
+			</Text>
+			<Diff
+				key={oldRevision + "-" + newRevision}
+				viewType="split"
+				diffType={type}
+				hunks={hunks}
+				codeEvents={codeEvents(newPath || oldPath)}
+				widgets={getWidgets(newPath || oldPath)}
+			>
+				{(hunks) =>
+					hunks.map((hunk) => (
+						<Hunk
+							key={hunk.content + hunk.newStart + hunk.newLines}
+							hunk={hunk}
+						/>
+					))
+				}
+			</Diff>
+		</Box>
 	);
 
-	return <div>{files.map(renderFile)}</div>;
+	return (
+		<Flex p="2rem" gap="3rem" flexDir="column">
+			{files.map(renderFile)}
+		</Flex>
+	);
 };
 
 export default DiffView;
