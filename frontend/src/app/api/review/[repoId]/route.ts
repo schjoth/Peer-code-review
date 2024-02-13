@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getRepoDetails, persistUserIdentity } from "../../db-requests";
 import { getOctokit } from "../../github/Github";
 import { Comment } from "@/store/CommentStore";
-import { Session, getSession } from "@auth0/nextjs-auth0";
+import { getSession } from "@auth0/nextjs-auth0";
 
 export interface CreateCommentBody {
 	comments: Comment[];
@@ -104,7 +104,7 @@ export async function GET(req: NextRequest, context: any) {
 	const pull_number = parseInt(repoDetails.repoUrl.split("/")[6]);
 
 	//get repo info
-	const prRes = await githubApi.request(
+	const prInfo = await githubApi.request(
 		"GET /repos/{owner}/{repo}/pulls/{pull_number}",
 		{
 			owner,
@@ -119,11 +119,21 @@ export async function GET(req: NextRequest, context: any) {
 		}
 	);
 
-	//get diff file content
-	const diffRes = await fetch(prRes.data.diff_url);
+	const diff = await githubApi.request(
+		"GET /repos/{owner}/{repo}/pulls/{pull_number}",
+		{
+			owner,
+			repo,
+			pull_number,
+			mediaType: {
+				format: "diff", // We need the raw diff file so react-diff-view can parse it
+			},
+		}
+	);
+	const diffString = diff.data as unknown as string;
 
 	return NextResponse.json({
-		diff: await diffRes.text(),
-		commit: prRes.data.head.sha,
+		diff: diffString,
+		commit: prInfo.data.head.sha,
 	});
 }
