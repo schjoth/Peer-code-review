@@ -11,4 +11,7 @@ It integrates directly into your GitHub Organization, by posting all the feedbac
 
 ## Identifying reviewers
 As seen in the screenshot above, every comment is signed with a UUID.
-Peer Code Review also allows the lookup the identity of the reviewer with this UUID, however one has to add some authorization to prevent everyone from being able to look it up.
+Peer Code Review also allows one to look up the identity of the reviewer with this UUID, however, one has to add some authorization to prevent everyone from being able to look it up.
+
+## Installation
+In both the frontend and backend folders there exist separate READMEs to guide you through the installation process.
