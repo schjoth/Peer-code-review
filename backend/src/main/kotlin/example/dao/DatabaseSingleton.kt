@@ -2,7 +2,10 @@ package example.dao
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import example.models.*
+import example.models.Courses
+import example.models.Repos
+import example.models.Reviewers
+import example.models.Users
 import io.ktor.server.config.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
@@ -32,7 +35,7 @@ object DatabaseSingleton {
                 } ?: "")
         val database = Database.connect(createHikariDataSource(jdbcURL, driverClassName))
         transaction(database) {
-            SchemaUtils.create(Courses, Assignments, Users, Submissions, Reviews, Repos, Reviewers)
+            SchemaUtils.create(Courses, Users, Repos, Reviewers)
         }
     }
 

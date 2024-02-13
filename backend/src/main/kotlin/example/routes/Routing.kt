@@ -12,12 +12,6 @@ fun Application.configureRouting() {
         route("/course") {
             courseRoutes()
         }
-        route("/assignment") {
-            assignmentRoutes()
-        }
-        route("/review") {
-            reviewRoutes()
-        }
         route("/repo") {
             repoRoutes()
         }
