@@ -77,7 +77,13 @@ const DiffView: FC<DiffViewProps> = ({ diffPlainText }) => {
 	);
 
 	return (
-		<Flex p="2rem" gap="3rem" flexDir="column">
+		<Flex
+			p="2rem"
+			gap="3rem"
+			flexDir="column"
+			overflowY={"scroll"}
+			maxH="100vh"
+		>
 			{files.map(renderFile)}
 		</Flex>
 	);

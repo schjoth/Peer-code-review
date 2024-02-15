@@ -28,8 +28,9 @@ const CommentEditor: React.FC<CommentEditorProps> = ({
 	// }, [comment]);
 
 	return (
-		<Box w="100%">
+		<Box w="90%" py="0.5rem" px="3rem" background="#e1e1e1" mx="auto">
 			<Textarea
+				background={"white"}
 				value={comment}
 				onChange={(e) => handleOnClick(e.target.value)}
 			></Textarea>
