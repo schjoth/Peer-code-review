@@ -1,6 +1,7 @@
 package example.routes
 
 import example.services.RepoService
+import example.services.ReviewerService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -26,9 +27,18 @@ fun Route.repoRoutes() {
         }
         call.respond(HttpStatusCode.BadRequest)
     }
-    get("{repoId}") {
-        call.parameters["repoId"]?.let {
-            call.respond(RepoService().repo(it.toInt()) ?: HttpStatusCode.NotFound)
+
+    route("{repoId}") {
+        get() {
+            call.parameters["repoId"]?.let {
+                call.respond(RepoService().repo(it.toInt()) ?: HttpStatusCode.NotFound)
+            }
+        }
+        get("/reviewers") {
+            call.parameters["repoId"]?.let {
+                call.respond(ReviewerService().getReviewersByRepo(it.toInt()))
+            }
         }
     }
+
 }
